@@ -10,6 +10,7 @@ import {
   togglePause,
   rotateClockwise,
   rotateCounterClockwise,
+  holdTetromino,
 } from '../game/gameLogic';
 import { GameState } from '../game/types';
 import { GAME_CONFIG } from '../game/config';
@@ -143,6 +144,16 @@ export function Game() {
         case 'R':
           event.preventDefault();
           setGameState(resetGame());
+          break;
+        case 'c':
+        case 'C':
+        case 'Shift':
+          event.preventDefault();
+          setGameState((prev) => {
+            const newState = holdTetromino(prev);
+            if (newState !== prev) playMoveSound();
+            return newState;
+          });
           break;
       }
     },
@@ -295,6 +306,7 @@ export function Game() {
           <div style={{ marginBottom: '3px' }}>↓ : 下移動</div>
           <div style={{ marginBottom: '3px' }}>↑/Space : ドロップ</div>
           <div style={{ marginBottom: '3px' }}>Z/X : 回転</div>
+          <div style={{ marginBottom: '3px' }}>C/Shift : ホールド</div>
           <div style={{ marginBottom: '3px' }}>P : 停止 | R : リセット</div>
         </div>
       </div>
@@ -391,6 +403,52 @@ export function Game() {
           </div>
         </div>
       )}
+
+      {/* ホールドプレビュー（左側下） */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 480,
+          left: 20,
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          padding: '25px 30px',
+          borderRadius: '24px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          pointerEvents: 'none',
+          animation: 'fadeIn 0.6s ease-out, float 3s ease-in-out infinite 1s',
+        }}
+      >
+        <div style={{
+          fontSize: '18px',
+          fontWeight: '700',
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffa726 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          marginBottom: '20px',
+          fontFamily: 'Poppins, sans-serif',
+          letterSpacing: '1px',
+        }}>
+          HOLD
+        </div>
+        {gameState.holdTetromino ? (
+          renderTetrominoPreview(gameState.holdTetromino, 'Hold', 1)
+        ) : (
+          <div style={{
+            fontSize: '11px',
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontWeight: '600',
+            padding: '20px',
+            textAlign: 'center',
+            fontStyle: 'italic',
+          }}>
+            C/Shiftで<br />ホールド
+          </div>
+        )}
+      </div>
 
       {/* ネクストプレビュー（右側） */}
       <div

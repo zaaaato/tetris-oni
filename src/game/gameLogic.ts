@@ -24,6 +24,7 @@ export function createInitialGameState(): GameState {
     currentTetromino,
     nextTetromino,
     nextNextTetromino,
+    holdTetromino: null,
     score: 0,
     level: 1,
     isGameOver: false,
@@ -388,5 +389,43 @@ export function togglePause(state: GameState): GameState {
   return {
     ...state,
     isPaused: !state.isPaused,
+  };
+}
+
+/**
+ * 現在のテトリミノをホールドする
+ */
+export function holdTetromino(state: GameState): GameState {
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
+
+  // ホールドがある場合は交換（位置はそのまま）
+  if (state.holdTetromino) {
+    const currentPosition = state.currentTetromino.position;
+    const newCurrent = {
+      ...state.holdTetromino,
+      position: currentPosition,
+    };
+    const newHold = state.currentTetromino;
+
+    return {
+      ...state,
+      currentTetromino: newCurrent,
+      holdTetromino: newHold,
+    };
+  }
+
+  // ホールドがない場合は、現在のをホールドして次のを出す
+  const newHold = state.currentTetromino;
+  const newCurrent = state.nextTetromino;
+  const newNext = state.nextNextTetromino;
+  const newNextNext = generateRandomTetromino();
+
+  return {
+    ...state,
+    currentTetromino: newCurrent,
+    nextTetromino: newNext,
+    nextNextTetromino: newNextNext,
+    holdTetromino: newHold,
   };
 }

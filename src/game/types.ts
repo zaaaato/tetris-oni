@@ -23,6 +23,7 @@ export type GameState = {
   currentTetromino: Tetromino | null;
   nextTetromino: Tetromino | null;
   nextNextTetromino: Tetromino | null;
+  holdTetromino: Tetromino | null;
   score: number;
   level: number;
   isGameOver: boolean;
