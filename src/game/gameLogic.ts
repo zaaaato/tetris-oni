@@ -1,6 +1,6 @@
-import { GAME_CONFIG } from './config';
-import { GameField, Tetromino, GameState } from './types';
-import { generateRandomTetromino } from './tetrominoGenerator';
+import { GAME_CONFIG } from "./config";
+import { GameField, Tetromino, GameState } from "./types";
+import { generateRandomTetromino } from "./tetrominoGenerator";
 
 /**
  * 空のフィールドを作成
@@ -47,7 +47,11 @@ export function canPlaceTetromino(
     const y = position.y + block.y + offsetY;
 
     // フィールド外チェック
-    if (x < 0 || x >= GAME_CONFIG.FIELD_WIDTH || y >= GAME_CONFIG.FIELD_HEIGHT) {
+    if (
+      x < 0 ||
+      x >= GAME_CONFIG.FIELD_WIDTH ||
+      y >= GAME_CONFIG.FIELD_HEIGHT
+    ) {
       return false;
     }
 
@@ -66,15 +70,23 @@ export function canPlaceTetromino(
 /**
  * テトリミノをフィールドに固定
  */
-export function lockTetromino(field: GameField, tetromino: Tetromino): GameField {
-  const newField = field.map(row => [...row]);
+export function lockTetromino(
+  field: GameField,
+  tetromino: Tetromino
+): GameField {
+  const newField = field.map((row) => [...row]);
   const { blocks, position } = tetromino;
 
   for (const block of blocks) {
     const x = position.x + block.x;
     const y = position.y + block.y;
 
-    if (y >= 0 && y < GAME_CONFIG.FIELD_HEIGHT && x >= 0 && x < GAME_CONFIG.FIELD_WIDTH) {
+    if (
+      y >= 0 &&
+      y < GAME_CONFIG.FIELD_HEIGHT &&
+      x >= 0 &&
+      x < GAME_CONFIG.FIELD_WIDTH
+    ) {
       newField[y][x] = block.color;
     }
   }
@@ -85,13 +97,16 @@ export function lockTetromino(field: GameField, tetromino: Tetromino): GameField
 /**
  * 完成したラインを検出して消去
  */
-export function clearLines(field: GameField): { newField: GameField; linesCleared: number } {
+export function clearLines(field: GameField): {
+  newField: GameField;
+  linesCleared: number;
+} {
   const newField: GameField = [];
   let linesCleared = 0;
 
   for (let y = 0; y < field.length; y++) {
     const row = field[y];
-    const isComplete = row.every(cell => cell !== null);
+    const isComplete = row.every((cell) => cell !== null);
 
     if (!isComplete) {
       newField.push([...row]);
@@ -112,7 +127,8 @@ export function clearLines(field: GameField): { newField: GameField; linesCleare
  * テトリミノを左に移動
  */
 export function moveLeft(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   if (canPlaceTetromino(state.field, state.currentTetromino, -1, 0)) {
     return {
@@ -134,7 +150,8 @@ export function moveLeft(state: GameState): GameState {
  * テトリミノを右に移動
  */
 export function moveRight(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   if (canPlaceTetromino(state.field, state.currentTetromino, 1, 0)) {
     return {
@@ -156,13 +173,14 @@ export function moveRight(state: GameState): GameState {
  * テトリミノを時計回りに回転
  */
 export function rotateClockwise(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   const { currentTetromino } = state;
   const size = currentTetromino.size;
 
   // ブロックを90度時計回りに回転
-  const rotatedBlocks = currentTetromino.blocks.map(block => ({
+  const rotatedBlocks = currentTetromino.blocks.map((block) => ({
     ...block,
     x: size - 1 - block.y,
     y: block.x,
@@ -219,13 +237,14 @@ export function rotateClockwise(state: GameState): GameState {
  * テトリミノを反時計回りに回転
  */
 export function rotateCounterClockwise(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   const { currentTetromino } = state;
   const size = currentTetromino.size;
 
   // ブロックを90度反時計回りに回転
-  const rotatedBlocks = currentTetromino.blocks.map(block => ({
+  const rotatedBlocks = currentTetromino.blocks.map((block) => ({
     ...block,
     x: block.y,
     y: size - 1 - block.x,
@@ -282,7 +301,8 @@ export function rotateCounterClockwise(state: GameState): GameState {
  * テトリミノを下に移動
  */
 export function moveDown(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   if (canPlaceTetromino(state.field, state.currentTetromino, 0, 1)) {
     return {
@@ -307,7 +327,9 @@ export function moveDown(state: GameState): GameState {
   const nextNextTetromino = generateRandomTetromino();
 
   // 新しいテトリミノが配置できない場合はゲームオーバー
-  const isGameOver = newTetromino ? !canPlaceTetromino(clearedField, newTetromino) : true;
+  const isGameOver = newTetromino
+    ? !canPlaceTetromino(clearedField, newTetromino)
+    : true;
 
   // スコア計算: テトリミノ配置で10点 + ライン消去ボーナス
   const placementBonus = 10; // テトリミノを置いた基本点
@@ -329,10 +351,14 @@ export function moveDown(state: GameState): GameState {
  * テトリミノを一番下まで落とす
  */
 export function hardDrop(state: GameState): GameState {
-  if (!state.currentTetromino || state.isGameOver || state.isPaused) return state;
+  if (!state.currentTetromino || state.isGameOver || state.isPaused)
+    return state;
 
   let newState = state;
-  while (newState.currentTetromino && canPlaceTetromino(newState.field, newState.currentTetromino, 0, 1)) {
+  while (
+    newState.currentTetromino &&
+    canPlaceTetromino(newState.field, newState.currentTetromino, 0, 1)
+  ) {
     newState = moveDown(newState);
   }
 
@@ -344,8 +370,8 @@ export function hardDrop(state: GameState): GameState {
  * スコア計算
  */
 function calculateScore(linesCleared: number, level: number): number {
-  const baseScores = [0, 100, 400, 900, 1600];
-  return (baseScores[linesCleared] || linesCleared * 100) * level;
+  const baseScores = [0, 100, 400, 900, 1600, 2500, 3600, 5000];
+  return (baseScores[linesCleared] || linesCleared * 1000) * level;
 }
 
 /**
