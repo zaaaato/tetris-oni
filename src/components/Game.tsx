@@ -21,6 +21,7 @@ import {
   playGameOverSound,
   playLevelUpSound,
   playLockSound,
+  playErrorSound,
 } from '../sounds/soundEffects';
 
 export function Game() {
@@ -151,7 +152,12 @@ export function Game() {
           event.preventDefault();
           setGameState((prev) => {
             const newState = holdTetromino(prev);
-            if (newState !== prev) playMoveSound();
+            if (newState !== prev) {
+              playMoveSound();
+            } else {
+              // 交換できなかった場合はエラー音
+              playErrorSound();
+            }
             return newState;
           });
           break;

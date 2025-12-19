@@ -125,3 +125,25 @@ export function playLevelUpSound() {
 export function playLockSound() {
   playBeep(150, 0.1, 'square');
 }
+
+/**
+ * エラー音（操作が無効な時）
+ */
+export function playErrorSound() {
+  const ctx = getAudioContext();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  oscillator.frequency.setValueAtTime(180, ctx.currentTime);
+  oscillator.frequency.setValueAtTime(150, ctx.currentTime + 0.05);
+  oscillator.type = 'sawtooth';
+
+  gainNode.gain.setValueAtTime(GAME_CONFIG.SOUND_VOLUME * 0.7, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.15);
+}

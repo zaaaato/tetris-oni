@@ -406,6 +406,13 @@ export function holdTetromino(state: GameState): GameState {
       ...state.holdTetromino,
       position: currentPosition,
     };
+
+    // 交換後のテトリミノが配置可能かチェック
+    if (!canPlaceTetromino(state.field, newCurrent)) {
+      // 配置できない場合は交換しない
+      return state;
+    }
+
     const newHold = state.currentTetromino;
 
     return {
